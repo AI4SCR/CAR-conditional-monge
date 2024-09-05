@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Sequence
 
+import os
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -196,9 +197,14 @@ class AETrainerModule:
 
     def load_model(self, dataset_name: str, drug_condition: str):
         """Load model from checkpoint."""
-        model_dir = self.model_dir / dataset_name
         target = {"params": self.state.params, "latent_shift": self.latent_shift}
-        prefix = f"autoencoder_{self.model.latent_dim}_{dataset_name}_{drug_condition}_"
+        prefix = self.config.training.get("full_path", None)
+        if prefix is None:
+            model_dir = self.model_dir / dataset_name
+            prefix = f"autoencoder_{self.model.latent_dim}_{dataset_name}_{drug_condition}_"
+
+        else:
+            model_dir, prefix = os.path.split(prefix)
         logger.info(f"Loading AE model checkpoint from {model_dir}, {prefix}")
         cpkt = checkpoints.restore_checkpoint(
             ckpt_dir=model_dir,
