@@ -305,7 +305,8 @@ class ConditionalTrainer(AbstractTrainer):
         loss_g_format = "{:.2f}".format(loss_g)
         w_dist_fomrat = "{:.2f}".format(w_dist)
         logger.info(
-            f"{step} n_iters - {kind} - loss_f: {loss_f_format}, loss_g: {loss_g_format}, w_dist: {w_dist_fomrat}"
+            f"""{step} n_iters - {kind} - loss_f: {loss_f_format},
+            loss_g: {loss_g_format}, w_dist: {w_dist_fomrat}"""
         )
         return log_dict
 
@@ -333,7 +334,8 @@ class ConditionalTrainer(AbstractTrainer):
         identity: bool = False,
         n_samples: int = 9,
     ) -> None:
-        """Evaluate a trained model on a validation set and save the metrics to a json file."""
+        """Evaluate a trained model on a validation set
+        and save the metrics to a json file."""
 
         def evaluate_condition(loader_source, loader_target, cond_embeddings, metrics):
             for enum, (source, target) in enumerate(zip(loader_source, loader_target)):

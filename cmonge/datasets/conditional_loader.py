@@ -14,8 +14,9 @@ class ConditionalDataModule:
     """Class for conditional dataloaders.
 
     Available modes:
-    random - Conditions are randomly split into train and test, train on all data from some conditions and test on all data from others.
-    homogeneous - Train on all conditions but keep out some data from every condition for testing.
+    random - Conditions are randomly split into train and test, train on all data from
+    some conditions and test on all data from others. homogeneous
+    - Train on all conditions but keep out some data from every condition for testing.
     """
 
     def __init__(

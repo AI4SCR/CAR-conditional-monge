@@ -183,7 +183,9 @@ class PICNN(ICNN):
         """A function that can be evaluated to obtain a potential value, or a linear
         interpolation of a potential.
         """
-        return lambda x, c: self.apply({"params": params}, x=x, c=c)  # type: ignore[misc]
+        return lambda x, c: self.apply(
+            {"params": params}, x=x, c=c
+        )  # type: ignore[misc]
 
     def potential_gradient_fn(
         self,

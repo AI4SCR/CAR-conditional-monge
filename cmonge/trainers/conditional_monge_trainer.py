@@ -234,7 +234,8 @@ class ConditionalMongeTrainer(AbstractTrainer):
         identity: bool = False,
         n_samples: int = 9,
     ) -> None:
-        """Evaluate a trained model on a validation set and save the metrics to a json file."""
+        """Evaluate a trained model on a validation set and
+        save the metrics to a json file."""
 
         def evaluate_condition(
             loader_source: Iterator[jnp.ndarray],

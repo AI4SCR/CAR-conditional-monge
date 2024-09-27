@@ -11,7 +11,8 @@ from sklearn.metrics.pairwise import rbf_kernel
 
 def average_r2(target: jnp.ndarray, transport: jnp.ndarray) -> float:
     """
-    Calculate the correlation coefficient r^2 between the means of average features in target and tansport.
+    Calculate the correlation coefficient r^2
+    between the means of average features in target and tansport.
     """
     target_means = jnp.mean(target, axis=0)
     transport_means = jnp.mean(transport, axis=0)
@@ -20,7 +21,8 @@ def average_r2(target: jnp.ndarray, transport: jnp.ndarray) -> float:
 
 
 def drug_signature(target: jnp.ndarray, transport: jnp.ndarray) -> float:
-    """Calculates the euclidien distance between the marginal means of the target and transported measures."""
+    """Calculates the euclidien distance between
+    the marginal means of the target and transported measures."""
     target_means = jnp.mean(target, 0)
     transport_means = jnp.mean(transport, 0)
     return float(jnp.linalg.norm(target_means - transport_means))

@@ -21,6 +21,8 @@ from cmonge.evaluate import (
 )
 from cmonge.metrics import fitting_loss, regularizer
 from cmonge.utils import create_or_update_logfile, optim_factory
+from flax.training.orbax_utils import save_args_from_target
+from orbax.checkpoint import PyTreeCheckpointer
 
 
 class AbstractTrainer:
@@ -71,16 +73,20 @@ class AbstractTrainer:
         n_samples: int = 9,
         log_transport: bool = False,
     ) -> None:
-        """Evaluate a trained model on a validation set and save the metrics to a json file."""
+        """Evaluate a trained model on a validation set
+        and save the metrics to a json file."""
         logger.info(f"Evaluation started on {datamodule.drug_condition}.")
         init_logger_dict(self.metrics, datamodule.drug_condition)
         if valid:
+            logger.info("Evaluating on validation set")
             loader_source, loader_target = datamodule.valid_dataloaders()
             self.metrics["eval"] = "valid"
         else:
+            logger.info("Evaluating on test set")
             loader_source, loader_target = datamodule.test_dataloaders()
             self.metrics["eval"] = "test"
         for enum, (source, target) in enumerate(zip(loader_source, loader_target)):
+
             if not identity:
                 transport = self.transport(source)
 
@@ -95,18 +101,29 @@ class AbstractTrainer:
                 target = target[:, datamodule.marker_idx]
                 transport = transport[:, datamodule.marker_idx]
 
-            log_metrics(self.metrics, target, transport)
+            log_metrics(
+                self.metrics,
+                target,
+                transport,
+            )
             if enum > n_samples:
                 break
 
-        log_mean_metrics(self.metrics)
+        log_mean_metrics(
+            self.metrics,
+        )
         create_or_update_logfile(self.logger_path, self.metrics)
 
 
 class MongeMapTrainer(AbstractTrainer):
     """Wrapper class for Monge Gap training."""
 
-    def __init__(self, jobid: int, logger_path: Path, config: DotMap) -> None:
+    def __init__(
+        self,
+        jobid: int,
+        logger_path: Path,
+        config: DotMap,
+    ) -> None:
         super().__init__(jobid, logger_path)
         self.setup(**config)
 
@@ -119,6 +136,7 @@ class MongeMapTrainer(AbstractTrainer):
         fitting_loss: Dict[str, Any],
         regularizer: Dict[str, Any],
         optim: Dict[str, Any],
+        checkpointing_path: str = None,
     ) -> None:
         """Initializes models and optimizers."""
         self.metrics["params"] = {
@@ -138,7 +156,10 @@ class MongeMapTrainer(AbstractTrainer):
         regularizer = partial(regularizer_fn, **regularizer.kwargs)
 
         # setup neural network model
-        model = models.MLP(dim_hidden=dim_hidden, is_potential=False, act_fn=nn.gelu)
+        self.dim_hidden = dim_hidden
+        model = models.MLP(
+            dim_hidden=self.dim_hidden, is_potential=False, act_fn=nn.gelu
+        )
 
         # setup optimizer and scheduler
         opt_fn = optim_factory[optim.name]
@@ -179,11 +200,50 @@ class MongeMapTrainer(AbstractTrainer):
         """Transports a batch of data using the learned model."""
         return self.state.apply_fn({"params": self.state.params}, source)
 
-    def save_checkpoint(self, path: Path) -> None:
-        raise NotImplementedError
+    def save_checkpoint(self, path: Path = None, config: DotMap = None) -> None:
+        if path is None and config is None:
+            logger.error(
+                """Please provide a checkpoint save path
+            either directly or through the config"""
+            )
+        elif path is None:
+            path = config.checkpointing_path
 
-    def load_checkpoint(self, path: Path) -> None:
-        raise NotImplementedError
+        ckpt = self.solver.state_neural_net
+        checkpointer = PyTreeCheckpointer()
+        save_args = save_args_from_target(ckpt)
+        checkpointer.save(path, ckpt, save_args=save_args, force=True)
+
+    @classmethod
+    def load_checkpoint(
+        cls,
+        jobid: int,
+        logger_path: Path,
+        config: DotMap,
+        ckpt_path: Path = None,
+    ) -> None:
+        out_class = cls(
+            jobid=jobid,
+            logger_path=logger_path,
+            config=config,
+        )
+
+        if ckpt_path is None:
+            if len(config.checkpointing_path) > 0:
+                ckpt_path = config.checkpointing_path
+            else:
+                logger.error(
+                    """Provide checkpointing path either directly or
+                    through the model config"""
+                )
+
+        checkpointer = PyTreeCheckpointer()
+        out_class.solver.state_neural_net = checkpointer.restore(
+            ckpt_path, item=out_class.solver.state_neural_net
+        )
+        out_class.state = out_class.solver.state_neural_net
+        logger.info("Loaded MongeMapTrainer from checkpoint")
+        return out_class
 
 
 class NeuralDualTrainer(AbstractTrainer):
