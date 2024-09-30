@@ -1,14 +1,15 @@
 data:
-  name: 4i
-  file_path: /dccstor/storage01/datasets/4i/8h.h5ad
-  drugs_path: /dccstor/storage01/datasets/4i/drugs.txt
-  features: /dccstor/storage01/datasets/4i/features.txt
+  name: car
+  file_path: conditional-monge/CD8.h5ad
+  drugs_path: conditional-monge/CAR_variants.txt
+  features: conditional-monge/functional_and_score_genes.txt
   batch_size: 256
   split: [0.8, 0.2]
-  drug_col: drug
-  drug_conditions: ixazomib
-  control_condition: control
+  drug_col: CAR_Variant
+  drug_condition: IL15RA-CD28-z
+  control_condition: NA-NA-NA
   ae: false
+  seed: 42
 
 model:
   method: monge
@@ -31,5 +32,7 @@ model:
       weight_decay: 1.0e-5
 
   dim_hidden: [64, 64, 64, 64]
-  num_genes: 48
+  num_genes: 82
   num_train_iters: 5000
+
+  checkpointing_path: "conditional-monge/Outputs/NoEmbed_FuncScore_Monge_CD8/"

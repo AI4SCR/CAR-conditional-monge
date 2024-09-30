@@ -1,0 +1,38 @@
+data:
+  name: car
+  file_path: conditional-monge/CD8.h5ad
+  drugs_path: conditional-monge/CAR_variants.txt
+  features: conditional-monge/hvg_all_cars.txt
+  batch_size: 256
+  split: [0.8, 0.2]
+  drug_col: CAR_Variant
+  drug_condition: IL15RA-CD28-z
+  control_condition: NA-NA-NA
+  ae: false
+  seed: 42
+
+model:
+  method: monge
+
+  fitting_loss:
+    name: sinkhorn
+    kwargs:
+      epsilon_fitting: 1
+
+  regularizer:
+    name: monge
+    kwargs:
+      epsilon_regularizer: 1.0e-2
+      cost: euclidean
+
+  optim:
+    lr: 1.0e-4
+    name: adamw
+    kwargs:
+      weight_decay: 1.0e-5
+
+  dim_hidden: [64, 64, 64, 64]
+  num_genes: 81
+  num_train_iters: 5000
+
+  checkpointing_path: "conditional-monge/Outputs/NoEmbed_HVG_Monge_CD8/"
