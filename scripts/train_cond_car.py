@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from cmonge.datasets.conditional_loader import ConditionalDataModule
-from cmonge.trainers.conditional_monge_trainer import ConditionalMongeTrainer
+from carot.datasets.conditional_loader import ConditionalDataModule
+from carot.trainers.conditional_monge_trainer import ConditionalMongeTrainer
 from cmonge.utils import load_config
 from loguru import logger
 

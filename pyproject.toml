@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "cmonge"
-version = "1.0.0"
-description = "Extension of the Monge Gap to learn conditional optimal transport maps"
-authors = ["Benedek Harsanyi <hben.0204@gmail.com>", "Jannis Born <jab@zurich.ibm.com>"]
+name = "carot"
+version = "0.0.1"
+description = "Extension of the Conditional Monge Gap applied to single cell RNA sequencing of CAR T cells"
+authors = ["Alice Driessen <adr@zurich.ibm.com>", "Jannis Born <jab@zurich.ibm.com>"]
 readme = "README.md"
 
 
