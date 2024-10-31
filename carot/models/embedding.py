@@ -176,7 +176,7 @@ class CarEsmSmall(BaseEmbedding):
     def __call__(self, condition: str):
         condition = self.embeddings[condition]
         condition_batch = jnp.asarray([condition for _ in range(self.batch_size)])
-        return condition_batch
+        return condition_batch, 1
 
 
 class MetaDataEmbedding(BaseEmbedding):
