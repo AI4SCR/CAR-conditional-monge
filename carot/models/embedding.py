@@ -74,7 +74,7 @@ class CAR11DimEmbedding(BaseEmbedding):
     def __call__(self, condition: str):
         condition = self.embeddings[condition]
         condition_batch = jnp.asarray([condition for _ in range(self.batch_size)])
-        return condition_batch
+        return condition_batch, 1
 
 
 class CAR16DimEmbedding(BaseEmbedding):
@@ -145,7 +145,7 @@ class CAR16DimEmbedding(BaseEmbedding):
     def __call__(self, condition: str):
         condition = self.embeddings[condition]
         condition_batch = jnp.asarray([condition for _ in range(self.batch_size)])
-        return condition_batch
+        return condition_batch, 1
 
 
 class CarEsmSmall(BaseEmbedding):
@@ -246,7 +246,7 @@ class MetaDataEmbedding(BaseEmbedding):
     def __call__(self, condition: str):
         condition = self.embeddings[condition]
         condition_batch = jnp.asarray([condition for _ in range(self.batch_size)])
-        return condition_batch
+        return condition_batch, 1
 
 
 EmbeddingFactory = {
