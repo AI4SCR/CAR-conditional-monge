@@ -35,6 +35,7 @@ black = "^24.4.2"
 ruff = "^0.5.4"
 types-pyyaml = "^6.0.12.20240311"
 scipy = "1.12.0"
+cmonge = "0.0.1"
 
 [[tool.poetry.source]]
 name = "jax"
