@@ -1,9 +1,8 @@
 import random
-import numpy as np
-import pandas as pd
-
 from itertools import combinations
 
+import numpy as np
+import pandas as pd
 from cmonge.metrics import average_r2, compute_scalar_mmd, wasserstein_distance
 
 

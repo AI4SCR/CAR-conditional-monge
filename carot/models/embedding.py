@@ -2,10 +2,9 @@ from pathlib import Path
 
 import jax.numpy as jnp
 import pandas as pd
-from loguru import logger
-
 from cmonge.datasets.conditional_loader import ConditionalDataModule
 from cmonge.models.embedding import BaseEmbedding
+from loguru import logger
 
 
 class CAR11DimEmbedding(BaseEmbedding):

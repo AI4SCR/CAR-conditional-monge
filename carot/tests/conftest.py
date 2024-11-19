@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
-
-from carot.datasets.single_loader import CarModule
-from carot.datasets.conditional_loader import ConditionalDataModule
 from cmonge.utils import load_config
+
+from carot.datasets.conditional_loader import ConditionalDataModule
+from carot.datasets.single_loader import CarModule
 
 
 @pytest.fixture(scope="session")
