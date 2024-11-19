@@ -1,13 +1,13 @@
+import os
 from pathlib import Path
 
 import pytest
-import os
+from cmonge.trainers.ot_trainer import MongeMapTrainer
 from cmonge.utils import load_config
 
 from carot.datasets.conditional_loader import ConditionalDataModule
 from carot.datasets.single_loader import CarModule
 from carot.trainers.conditional_monge_trainer import ConditionalMongeTrainer
-from cmonge.trainers.ot_trainer import MongeMapTrainer
 
 
 @pytest.fixture(scope="session")
