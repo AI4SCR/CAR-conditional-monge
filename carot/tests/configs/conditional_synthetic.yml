@@ -50,3 +50,5 @@ model:
   
   num_train_iters: 10
   seed: 42
+
+logger_path: tests/logs.json

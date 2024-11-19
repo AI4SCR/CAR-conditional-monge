@@ -34,3 +34,5 @@ model:
   dim_hidden: [64, 64, 64, 64]
   num_genes: 80
   num_train_iters: 10
+
+logger_path: tests/logs.json
