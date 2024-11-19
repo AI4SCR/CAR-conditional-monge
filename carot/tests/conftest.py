@@ -29,5 +29,7 @@ def synthetic_data(synthetic_config):
 
 @pytest.fixture
 def cond_synthetic_data(cond_synthetic_config):
-    module = ConditionalDataModule(cond_synthetic_config.data)
+    module = ConditionalDataModule(
+        cond_synthetic_config.data, cond_synthetic_config.condition
+    )
     return module
