@@ -1,9 +1,90 @@
+import random
 import numpy as np
 import pandas as pd
 
 from itertools import combinations
 
 from cmonge.metrics import average_r2, compute_scalar_mmd, wasserstein_distance
+
+
+def get_source_target_transport(
+    trainer,
+    datamodule,
+    conditions,
+    n_samples=1,
+    target=True,
+    source=True,
+    transport=True,
+    max_sample: bool = False,
+):
+    if datamodule.data_config.split[2] > 0:
+        print("Evaluating on test set")
+        split_type = "test"
+    elif datamodule.data_config.split[1] > 0:
+        print("Evaluating on validation set")
+        split_type = "valid"
+    else:
+        print("Evaluating on training set")
+        split_type = "train"
+    all_expr = []
+    all_meta = []
+    for i in range(n_samples):
+        for condition in conditions:
+            dm = datamodule.loaders[condition]
+            cond_embeddings, num_contexts = trainer.embedding_module(condition)
+            print(cond_embeddings.shape)
+            batch_size = datamodule.data_config.batch_size
+            if split_type == "valid":
+                sel_target_cells = random.sample(
+                    dm.target_valid_cells.tolist(),
+                    batch_size,
+                )
+                sel_control_cells = random.sample(
+                    dm.control_valid_cells.tolist(),
+                    batch_size,
+                )
+            elif split_type == "test":
+                sel_target_cells = random.sample(
+                    dm.target_test_cells.tolist(), batch_size
+                )
+                sel_control_cells = random.sample(
+                    dm.control_test_cells.tolist(), batch_size
+                )
+            elif split_type == "train":
+                sel_target_cells = random.sample(
+                    dm.target_train_cells.tolist(), batch_size
+                )
+                sel_control_cells = random.sample(
+                    dm.control_train_cells.tolist(), batch_size
+                )
+            cond_expr = dm.adata[sel_target_cells].X
+            cond_meta = dm.adata.obs.loc[sel_target_cells, :]
+            source_expr = dm.adata[sel_control_cells].X
+            source_meta = dm.adata.obs.loc[sel_control_cells, :]
+            if target:
+                cond_meta["sample_n"] = i
+                cond_meta["dtype"] = "target"
+                cond_meta["condition"] = condition
+                all_expr.append(pd.DataFrame(cond_expr, columns=dm.adata.var_names))
+                all_meta.append(cond_meta)
+            if source:
+                source_meta["dtype"] = "source"
+                source_meta["sample_n"] = i
+                source_meta["condition"] = condition
+                all_meta.append(source_meta)
+                all_expr.append(pd.DataFrame(source_expr, columns=dm.adata.var_names))
+            if transport:
+                trans = trainer.transport(source_expr, cond_embeddings, num_contexts=2)
+                trans = datamodule.decoder(trans)
+                trans_meta = cond_meta.copy()
+                trans_meta["dtype"] = "transport"
+                trans_meta["condition"] = condition
+                trans_meta["sample_n"] = i
+                all_expr.append(pd.DataFrame(trans, columns=dm.adata.var_names))
+                all_meta.append(trans_meta)
+        all_expr = pd.concat(all_expr).reset_index(drop=True)
+        all_meta = pd.concat(all_meta).reset_index(drop=True)
+        return all_expr, all_meta
 
 
 def score_transports_and_targets_combinations(all_expr, all_meta):
