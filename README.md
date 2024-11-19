@@ -15,4 +15,26 @@ cd CAR-conditional-monge
 pip install -e .
 ```
 
-## TODO: Add usage example
+## Example usage
+
+You can find example config in `tests/configs/` for the unconditional and the conditional setting.
+To train a conditional monge model:
+```py
+from carot.datasets.conditional_loader import ConditionalDataModule
+from carot.trainers.conditional_monge_trainer import ConditionalMongeTrainer
+from cmonge.utils import load_config
+
+
+config_path = Path("tests/configs/conditional_synthetic.yml")
+config = load_config(config_path)
+
+datamodule = ConditionalDataModule(config.data, config.condition)
+
+logger_path = Path(config.logger_path)
+
+datamodule = ConditionalDataModule(config.data, config.condition)
+trainer = ConditionalMongeTrainer(jobid=1, logger_path=logger_path, config=config.model, datamodule=datamodule)
+
+trainer.train(datamodule)
+trainer.evaluate(datamodule)
+```
