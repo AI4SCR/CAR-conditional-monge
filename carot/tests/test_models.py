@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from cmonge.trainers.ot_trainer import MongeMapTrainer
+
 from carot.trainers.conditional_monge_trainer import ConditionalMongeTrainer
 
 
