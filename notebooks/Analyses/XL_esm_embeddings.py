@@ -21,7 +21,7 @@ domains = [
     "extracell_and_TMD_CARs",
     "NANANA_tiny_tail",
 ]
-linker_AA = "SA"
+linker_aa = "SA"
 all_domains = {}
 for d in domains:
     with open(data_dir / f"{d}.txt") as f:
