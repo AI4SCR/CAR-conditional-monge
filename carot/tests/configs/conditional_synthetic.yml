@@ -48,7 +48,7 @@ model:
     model_dir: carot/synthetic_data/embed
     checkpoint: true
   
-  num_train_iters: 10
+  num_train_iters: 5
   seed: 42
 
 logger_path: tests/logs.json
