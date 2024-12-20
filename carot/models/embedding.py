@@ -104,7 +104,7 @@ class CAR16DimEmbedding(BaseEmbedding):
             values = jnp.asarray(row.values.astype("float"))
             self.embeddings[index] = values
 
-    def encode_car_16dim(CAR):
+    def encode_car_16dim(self, car):
         """
         Compute one-hot encoding of CAR variant on 16 bits.
         Use alphabetical order of CAR domains: 41BB, CD28, CD40, CTLA4, IL15RA.
