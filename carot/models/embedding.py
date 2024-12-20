@@ -120,7 +120,7 @@ class CAR16DimEmbedding(BaseEmbedding):
         0 everywhere is TCR-
         """
         all_domains = ["41BB", "CD28", "CD40", "CTLA4", "IL15RA"]
-        car_variant = CAR.split("-")
+        car_variant = car.split("-")
 
         encoding = [0] * 16
 
